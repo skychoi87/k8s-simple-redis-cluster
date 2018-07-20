@@ -1,10 +1,10 @@
 # redis-cluster
 
-# kube-redis-test / statefulset & redis persistence Vol using k8s hostpath
+# statefulset & redis persistence Vol using k8s hostpath
 
-kubectl create ns redis
+(kubectl create ns redis)
 
-kubectl apply -n redis -f statefulset/redis-statefulset.yaml
+kubectl apply -f statefulset/redis-cluster.yaml
 
 
 ## manage redis-cluster
