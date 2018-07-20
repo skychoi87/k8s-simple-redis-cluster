@@ -23,7 +23,7 @@ gem install redis
 ./redis-trib.rb
 
 
-./redis-trib.rb create --replicas 0 192.168.0.111:7000 192.168.0.112:7000 192.168.0.113:7000
+./redis-trib.rb create --replicas 0 192.168.0.111:7000 192.168.0.112:7000 {redis-pod-ip}:7000
 
 redis-cli -c -h {service-ip} -p 7000
 
