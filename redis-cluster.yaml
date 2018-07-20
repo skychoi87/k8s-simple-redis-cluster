@@ -1,0 +1,103 @@
+# Using HostPath
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster
+#  namespace: redis
+  labels:
+    app: redis
+    name: redis-cluster
+spec:
+  selector:
+    app: redis
+    name: redis-cluster
+#  type: NodePort
+  ports:
+  - name: redis
+    port: 7000
+    targetPort: 7000
+    protocol: TCP
+  - name: cluster
+    port: 17000
+    targetPort: 17000
+    protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-cluster-config
+#  namespace: redis
+data:
+  redis.conf: |+
+    port 7000
+    cluster-enabled yes
+    cluster-config-file /data/nodes.conf
+    cluster-node-timeout 1800
+    appendonly yes
+    appendfilename appendonly.aof
+    dbfilename dump.rdb
+    logfile /data/log.log
+    protected-mode no
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-cluster
+#  namespace: redis
+spec:
+  selector:
+    matchLabels:
+      name: redis-cluster
+      app: redis
+  serviceName: redis-cluster
+  ## Redis Cluster requires at least 3 master nodes
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: redis
+        name: redis-cluster
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - node1
+                - node2
+                - node3
+      volumes:
+      - name: redis-conf
+        configMap:
+          name: redis-cluster-config
+          items:
+          - key: redis.conf
+            path: redis.conf
+      - name: redis-data
+        hostPath:
+          # If you intented to pass a host directory, use absolute path
+          path: /home/vagrant/redis-test/data
+          type: Directory
+      containers:
+      - name: redis
+        image: redis
+#        image: redis-taco
+#        imagePullPolicy: IfNotPresent
+        ports:
+        - name: redis
+          containerPort: 7000
+          protocol: TCP
+        - name: cluster
+          containerPort: 17000
+          protocol: TCP
+        command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+        volumeMounts:
+        - name: redis-conf
+          mountPath: /usr/local/etc/redis/
+          readOnly: false
+        - name: redis-data
+          mountPath: /data
+          readOnly: false
