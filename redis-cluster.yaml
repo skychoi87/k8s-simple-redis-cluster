@@ -84,7 +84,7 @@ spec:
       containers:
       - name: redis
         image: redis
-#        image: redis-taco
+#        image: redis-test
 #        imagePullPolicy: IfNotPresent
         ports:
         - name: redis
