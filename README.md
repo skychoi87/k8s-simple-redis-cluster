@@ -1,15 +1,12 @@
 # redis-cluster
+statefulset & redis persistence Vol using k8s hostpath
 
-# statefulset & redis persistence Vol using k8s hostpath
-# edit redis-cluster.yaml
-
+## edit 'redis-cluster.yaml' first
 (kubectl create ns redis)
 
 kubectl apply -f redis-cluster.yaml
 
-
 ## manage redis-cluster
-
 kubectl run ubuntu-test -n redis --rm=false -ti --image ubuntu /bin/bash
 
 apt-get update
