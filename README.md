@@ -1,7 +1,7 @@
 # redis-cluster
 statefulset & redis persistence Vol using k8s hostpath
 
-## edit 'redis-cluster.yaml' first
+## edit 'redis-cluster.yaml'
 (kubectl create ns redis)
 
 kubectl apply -f redis-cluster.yaml
